@@ -1,5 +1,5 @@
 import { Version3Client } from "../node_modules/jira.js";
-import { JiraIssue } from "./issueClass";
+import { JiraIssue } from "./jiraIssueClass";
 
 require("dotenv").config();
 
