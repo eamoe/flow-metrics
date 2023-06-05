@@ -37,3 +37,23 @@ export class JiraIssue {
     }
 
 }
+
+export class JiraIssueList {
+  
+  jiraIssues: Array<JiraIssue>;
+
+  constructor(jiraIssues: Array<JiraIssue> = []) {
+    this.jiraIssues = jiraIssues;
+  }
+
+  public toString = () : string => {
+    return  `[Total: ${this.jiraIssues.length} issue(s)]\n` +
+            `---------------------------------------------\n` +
+            `${this.jiraIssues.map(i => i.toString()).join('\n')}`;
+  }
+
+  public addIssue(issue: JiraIssue): void {
+    this.jiraIssues.push(issue);
+  }
+
+}

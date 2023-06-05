@@ -1,5 +1,5 @@
 import { Version3Client } from "../node_modules/jira.js";
-import { JiraIssue } from "./jiraIssueClass";
+import { JiraIssue, JiraIssueList } from "./jiraIssueClass";
 
 require("dotenv").config();
 
@@ -29,6 +29,8 @@ async function main() {
     });
     const issues = dataLog["issues"]!;
 
+    let jiraIssueList = new JiraIssueList();
+
     issues.forEach((issue) => {
       const jiraIssue = new JiraIssue(
                                 issue["key"],
@@ -40,8 +42,9 @@ async function main() {
                                 issue["fields"]["issuetype"]!["id"]!,
                                 issue["fields"]["statuscategorychangedate"]
       );
-      console.log(jiraIssue.toString());
+      jiraIssueList.addIssue(jiraIssue);
     });
+    console.log(jiraIssueList.toString());
   } else {
     console.log("Project not found.");
   }
