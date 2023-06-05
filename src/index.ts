@@ -1,11 +1,10 @@
-import { url } from "inspector";
 import { Version3Client } from "../node_modules/jira.js";
+import { JiraIssue } from "./issueClass";
 
-require('dotenv').config();
+require("dotenv").config();
 
 async function main() {
-  
-    const client = new Version3Client({
+  const client = new Version3Client({
     // host url from environment variable
     host: process.env.HOSTURL!,
     authentication: {
@@ -25,30 +24,27 @@ async function main() {
   });
 
   if (project) {
-    
-    // create an issue
-    const { id } = await client.issues.createIssue({
-      fields: {
-        summary: "My 8th issue",
-        issuetype: {
-          name: "Task",
-        },
-        project: {
-          key: project.key,
-        },
-      },
+    const dataLog = await client.issueSearch.searchForIssuesUsingJql({
+      jql: process.env.JQLFILTER!,
     });
+    const issues = dataLog["issues"]!;
 
-    // get created issue
-    const issue = await client.issues.getIssue({ issueIdOrKey: id });
-    console.log(
-      `Issue '${issue.fields.summary}' was successfully added to '${project.name}' project.`
-    );
-
+    issues.forEach((issue) => {
+      const jiraIssue = new JiraIssue(
+                                issue["key"],
+                                issue["id"],
+                                issue["fields"]["summary"],
+                                issue["fields"]["created"],
+                                issue["fields"]["resolutiondate"]!,
+                                issue["fields"]["issuetype"]!["name"]!,
+                                issue["fields"]["issuetype"]!["id"]!,
+                                issue["fields"]["statuscategorychangedate"]
+      );
+      console.log(jiraIssue.toString());
+    });
   } else {
     console.log("Project not found.");
   }
-
 }
 
 main();
