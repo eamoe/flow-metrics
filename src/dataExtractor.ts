@@ -1,10 +1,12 @@
-import { JiraIssue, JiraIssueList } from "./jiraIssue";
 import { Version3Client } from "jira.js";
+import { JiraIssue, JiraIssueList } from "./jiraIssue";
+import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jiraIssueChangelog";
 
 export class JiraDataExtractor {
 
   client: Version3Client;
   issues: JiraIssueList;
+  changelog: JiraIssuesChangelogList
 
   constructor() {
     this.client = new Version3Client({
@@ -18,6 +20,7 @@ export class JiraDataExtractor {
       newErrorHandling: true,
     });
     this.issues = new JiraIssueList();
+    this.changelog = new JiraIssuesChangelogList();
   }
 
   public async extractJiraIssuesData(): Promise<void> {
@@ -41,7 +44,36 @@ export class JiraDataExtractor {
     });
   }
 
+  public async extractJiraIssuesChangelogData(): Promise<void> {
+    
+    const rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: "SKP-17" } );
+
+    let jiraIssueChangelog = new JiraIssueChangelog();
+    
+    jiraIssueChangelog.issueId = "SKP-17";
+
+    rawData["values"]!.forEach((issueChangelog) => {
+      let items = issueChangelog["items"]?.find((item) => item["fieldId"]! === "status");
+      
+      let transition: Transition = {  transitionId: issueChangelog["id"]!,
+                                      transitionDate: new Date(issueChangelog["created"]!),
+                                      fromStatus: items?.from!,
+                                      fromStatusString: items?.fromString!,
+                                      toStatus: items?.to!,
+                                      toStatusString: items?.toString!
+                                      };
+      
+      jiraIssueChangelog.addTransition(transition);
+      
+    });
+
+    this.changelog.addIssue(jiraIssueChangelog);
+
+  }
+  
   public toString(): string {
-    return `${this.issues.toString()}`;
+    return  `${this.issues.toString()}\n` +
+            `${this.changelog.toString()}`;
+            
   }
 }
