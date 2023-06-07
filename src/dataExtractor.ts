@@ -6,7 +6,7 @@ export class JiraDataExtractor {
 
   client: Version3Client;
   issuesList: JiraIssueList;
-  changelog: JiraIssuesChangelogList
+  changelogList: JiraIssuesChangelogList
 
   constructor() {
     this.client = new Version3Client({
@@ -20,7 +20,7 @@ export class JiraDataExtractor {
       newErrorHandling: true,
     });
     this.issuesList = new JiraIssueList();
-    this.changelog = new JiraIssuesChangelogList();
+    this.changelogList = new JiraIssuesChangelogList();
   }
 
   public async extractJiraIssuesData(): Promise<void> {
@@ -67,7 +67,7 @@ export class JiraDataExtractor {
         jiraIssueChangelog.addTransition(jiraIssue.issueKey, transition);
       });
       
-      this.changelog.addIssue(jiraIssueChangelog);
+      this.changelogList.addIssue(jiraIssueChangelog);
 
     }));
 
@@ -75,7 +75,7 @@ export class JiraDataExtractor {
 
   public toString(): string {
     return  `${this.issuesList.toString()}\n` +
-            `${this.changelog.toString()}\n`;
+            `${this.changelogList.toString()}\n`;
             
   }
 }
