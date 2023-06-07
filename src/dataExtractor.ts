@@ -71,12 +71,6 @@ export class JiraDataExtractor {
 
     }));
 
-    //const rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: "SKP-17" } );
-
-    // let jiraIssueChangelog = new JiraIssueChangelog();
-    
-    //jiraIssueChangelog.issueId = "SKP-17";
-
   }
 
   public toString(): string {
