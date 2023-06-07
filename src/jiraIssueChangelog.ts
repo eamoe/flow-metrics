@@ -8,22 +8,23 @@ export interface Transition {
 }
 
 export class JiraIssueChangelog {
-    issueId: string;
+    issueKey: string;
     transitions: Array<Transition>;
 
 
     constructor(issueId: string = "", transitions: Array<Transition> = []) {
-        this.issueId = issueId;
+        this.issueKey = issueId;
         this.transitions = transitions
     }
 
-    public addTransition(transition: Transition): void {
+    public addTransition(issueKey: string, transition: Transition): void {
+      this.issueKey = issueKey;
         this.transitions.push(transition);
       }
 
     public toString(): string {
         return this.transitions.map(
-                                    t => this.issueId + " " +
+                                    t => this.issueKey + " " +
                                     t.transitionId + " " +
                                     t.transitionDate.toUTCString() + " " +
                                     t.fromStatusString +
@@ -44,14 +45,12 @@ export class JiraIssuesChangelogList {
     this.jiraIssuesChangelog.push(issue);
   }
 
-  public findIssueChangelog(issueId: string): JiraIssueChangelog | undefined {
-      return this.jiraIssuesChangelog.find(issueChangelog => issueChangelog.issueId === issueId);
+  public findIssueChangelog(issueKey: string): JiraIssueChangelog | undefined {
+      return this.jiraIssuesChangelog.find(issueChangelog => issueChangelog.issueKey === issueKey);
   }
   
   public toString = () : string => {
-    return  `[Total: ${this.jiraIssuesChangelog.length} issue(s)]\n` +
-            `---------------------------------------------\n` +
-            `${this.jiraIssuesChangelog.map(i => i.toString()).join('\n')}`;
+    return  `${this.jiraIssuesChangelog.map(i => i.toString()).join('\n')}`;
   }
 
 }

@@ -5,7 +5,7 @@ import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jiraI
 export class JiraDataExtractor {
 
   client: Version3Client;
-  issues: JiraIssueList;
+  issuesList: JiraIssueList;
   changelog: JiraIssuesChangelogList
 
   constructor() {
@@ -19,7 +19,7 @@ export class JiraDataExtractor {
       },
       newErrorHandling: true,
     });
-    this.issues = new JiraIssueList();
+    this.issuesList = new JiraIssueList();
     this.changelog = new JiraIssuesChangelogList();
   }
 
@@ -40,40 +40,48 @@ export class JiraDataExtractor {
         issue["fields"]["issuetype"]!["id"]!,
         issue["fields"]["statuscategorychangedate"]
       );
-      this.issues.addIssue(jiraIssue);
+      this.issuesList.addIssue(jiraIssue);
     });
   }
 
   public async extractJiraIssuesChangelogData(): Promise<void> {
+
+    let rawData: any;
+    await Promise.all(this.issuesList.jiraIssues.map(async (jiraIssue) => {
+
+      rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: jiraIssue.issueKey } );
+
+      let jiraIssueChangelog = new JiraIssueChangelog();
+
+      rawData["values"].forEach((issueChangelog: any) => {
+        let items = issueChangelog["items"]?.find((item: any) => item["fieldId"]! === "status");
+        
+        let transition: Transition = {  transitionId: issueChangelog["id"]!,
+                                        transitionDate: new Date(issueChangelog["created"]!),
+                                        fromStatus: items?.from!,
+                                        fromStatusString: items?.fromString!,
+                                        toStatus: items?.to!,
+                                        toStatusString: items?.toString!
+                                        };
+        
+        jiraIssueChangelog.addTransition(jiraIssue.issueKey, transition);
+      });
+      
+      this.changelog.addIssue(jiraIssueChangelog);
+
+    }));
+
+    //const rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: "SKP-17" } );
+
+    // let jiraIssueChangelog = new JiraIssueChangelog();
     
-    const rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: "SKP-17" } );
-
-    let jiraIssueChangelog = new JiraIssueChangelog();
-    
-    jiraIssueChangelog.issueId = "SKP-17";
-
-    rawData["values"]!.forEach((issueChangelog) => {
-      let items = issueChangelog["items"]?.find((item) => item["fieldId"]! === "status");
-      
-      let transition: Transition = {  transitionId: issueChangelog["id"]!,
-                                      transitionDate: new Date(issueChangelog["created"]!),
-                                      fromStatus: items?.from!,
-                                      fromStatusString: items?.fromString!,
-                                      toStatus: items?.to!,
-                                      toStatusString: items?.toString!
-                                      };
-      
-      jiraIssueChangelog.addTransition(transition);
-      
-    });
-
-    this.changelog.addIssue(jiraIssueChangelog);
+    //jiraIssueChangelog.issueId = "SKP-17";
 
   }
-  
+
   public toString(): string {
-    return  `${this.issues.toString()}\n` +
-            `${this.changelog.toString()}`;
+    return  `${this.issuesList.toString()}\n` +
+            `${this.changelog.toString()}\n`;
             
   }
 }
