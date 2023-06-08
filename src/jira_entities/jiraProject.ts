@@ -1,49 +1,49 @@
 export class JiraProject {
 
-    projectId: string;
-    projectKey: string;
-    projectName: string;
+  id: string;
+  key: string;
+  name: string;
+
+  issueTypes: Array<IssueType>;
   
-    issueTypes: Array<IssueType>;
-  
-    constructor(projectId: string = "",
-                projectKey: string = "",
-                projectName: string = "",
-                issueTypes: Array<IssueType> = []) {
-      this.projectId = projectId;
-      this.projectKey = projectKey;
-      this.projectName = projectName;
-      this.issueTypes = issueTypes;
-    }
-  
-    public toString(): string {
-      return (
-        `${this.projectId} ${this.projectKey} ${this.projectName}\n` +
-        `${this.issueTypes.join('\n')}`
-      );
-    }
+  constructor(id: string = "",
+              key: string = "",
+              name: string = "",
+              issueTypes: Array<IssueType> = []) {
+    this.id = id;
+    this.key = key;
+    this.name = name;
+    this.issueTypes = issueTypes;
   }
   
-  export class IssueType {
+  public toString(): string {
+    return (
+      `${this.id} ${this.key} ${this.name}\n` +
+      `${this.issueTypes.join('\n')}`
+    );
+  }
+
+}
+  
+export class IssueType {
     
-    issueTypeId: string;
-    issueTypeIconUrl: string;
-    IssueTypeName: string;
-    IsSubtask: boolean;
+  id: string;
+  name: string;
+  isSubtask: boolean;
+  iconUrl: string;
   
-    constructor(
-                issueTypeId: string = "",
-                issueTypeIconUrl: string = "",
-                issueTypeName: string = "",
-                IsSubtask: boolean = false) {
-      this.issueTypeId = issueTypeId;
-      this.issueTypeIconUrl = issueTypeIconUrl;
-      this.IssueTypeName = issueTypeName;
-      this.IsSubtask = IsSubtask;
-    }
-  
-    public toString(): string {
-      return `${this.issueTypeId} ${this.IssueTypeName} ${this.IsSubtask}`;
-    }
-  
+  constructor(id: string = "",
+              name: string = "",
+              isSubtask: boolean = false,
+              iconUrl: string = "") {
+    this.id = id;
+    this.name = name;
+    this.isSubtask = isSubtask;
+    this.iconUrl = iconUrl;
   }
+  
+  public toString(): string {
+    return `${this.id} ${this.name} ${this.isSubtask}`;
+  }
+  
+}

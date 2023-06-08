@@ -8,22 +8,21 @@ async function main() {
     
     let data = new JiraDataExtractor();
 
-    console.log("Starting extraction of Jira issue data...");
+    console.log("Extracting jira issue data...");
     await data.extractJiraIssuesData();
-    console.log("finishing extraction of Jira issue data...");
 
-    console.log("Starting extraction of Jira issue changelog...");
+    console.log("Extracting jira issue changelog...");
     await data.extractJiraIssuesChangelogData();
-    console.log("finishing extraction of Jira issue changelog...");
 
-    console.log("Starting extraction of Jira project...");
+    console.log("Extracting jira project...");
     await data.extractJiraProjectData();
-    console.log("finishing extraction of Jira project...");
     
     console.log(data.toString());
 
   } catch (e: any) {
+
     console.log(e.message);
+
   }
 
 }
