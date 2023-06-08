@@ -1,4 +1,4 @@
-export class JiraProject {
+export class Project {
 
   id: string;
   key: string;

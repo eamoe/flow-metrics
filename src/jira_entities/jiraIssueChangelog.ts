@@ -1,19 +1,20 @@
-export interface Transition {
-    id: string;
-    created: Date;
-    statusFromId: string;
-    statusFromName: string;
-    statusToId: string;
-    statusToName: string;
+export interface Transition {   
+  id: string;
+  created: Date;
+  statusFromId: string;
+  statusFromName: string;
+  statusToId: string;
+  statusToName: string;
 }
 
-export class JiraIssueChangelog {
+export class IssueChangelog {
+  
   issueKey: string;
   transitions: Array<Transition>;
 
 
-  constructor(issueId: string = "", transitions: Array<Transition> = []) {
-    this.issueKey = issueId;
+  constructor(issueKey: string = "", transitions: Array<Transition> = []) {
+    this.issueKey = issueKey;
     this.transitions = transitions;
   }
 
@@ -23,8 +24,7 @@ export class JiraIssueChangelog {
   }
 
   public toString(): string {
-    return this.transitions.map(
-                                t => this.issueKey + " " +
+    return this.transitions.map(t => this.issueKey + " " +
                                 t.id + " " +
                                 t.created.toUTCString() + " " +
                                 t.statusFromName + " -> " +
@@ -33,24 +33,24 @@ export class JiraIssueChangelog {
 
 }
 
-export class JiraIssuesChangelogList {
+export class IssuesChangelogList {
   
-  jiraIssuesChangelog: Array<JiraIssueChangelog>;
+  issueChangelog: Array<IssueChangelog>;
 
-  constructor(jiraIssuesChangelog: Array<JiraIssueChangelog> = []) {
-    this.jiraIssuesChangelog = jiraIssuesChangelog;
+  constructor(issueChangelog: Array<IssueChangelog> = []) {
+    this.issueChangelog = issueChangelog;
   }
 
-  public addIssue(issue: JiraIssueChangelog): void {
-    this.jiraIssuesChangelog.push(issue);
+  public addIssue(issue: IssueChangelog): void {
+    this.issueChangelog.push(issue);
   }
 
-  public findIssueChangelog(issueKey: string): JiraIssueChangelog | undefined {
-      return this.jiraIssuesChangelog.find(issueChangelog => issueChangelog.issueKey === issueKey);
+  public findIssueChangelog(issueKey: string): IssueChangelog | undefined {
+      return this.issueChangelog.find(issueChangelog => issueChangelog.issueKey === issueKey);
   }
   
   public toString = () : string => {
-    return `${this.jiraIssuesChangelog.map(i => i.toString()).join('\n')}`;
+    return `${this.issueChangelog.map(item => item.toString()).join('\n')}`;
   }
 
 }

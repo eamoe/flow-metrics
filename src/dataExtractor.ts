@@ -1,14 +1,14 @@
 import { Version3Client } from "jira.js";
-import { JiraIssue, JiraIssueList } from "./jira_entities/jiraIssue";
-import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
-import { JiraProject, IssueType } from  "./jira_entities/jiraProject";
+import { Issue, IssueList } from "./jira_entities/jiraIssue";
+import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
+import { Project, IssueType } from  "./jira_entities/jiraProject";
 
 export class JiraDataExtractor {
 
   private client: Version3Client;
-  private issuesList: JiraIssueList;
-  private changelogList: JiraIssuesChangelogList;
-  private project: JiraProject;
+  private issueList: IssueList;
+  private changelogList: IssuesChangelogList;
+  private project: Project;
 
   constructor() {
     this.client = new Version3Client({ host: process.env.HOSTURL!,
@@ -20,9 +20,9 @@ export class JiraDataExtractor {
                                       },
                                       newErrorHandling: true,
                                     });
-    this.issuesList = new JiraIssueList();
-    this.changelogList = new JiraIssuesChangelogList();
-    this.project = new JiraProject();
+    this.issueList = new IssueList();
+    this.changelogList = new IssuesChangelogList();
+    this.project = new Project();
   }
 
   public async extractJiraIssuesData(): Promise<void> {
@@ -32,7 +32,7 @@ export class JiraDataExtractor {
     });
 
     rawData["issues"]!.forEach((issue) => {
-      const jiraIssue = new JiraIssue(
+      const item = new Issue(
         issue["key"],
         issue["id"],
         issue["fields"]["summary"],
@@ -42,34 +42,34 @@ export class JiraDataExtractor {
         issue["fields"]["issuetype"]!["id"]!,
         issue["fields"]["statuscategorychangedate"]
       );
-      this.issuesList.addIssue(jiraIssue);
+      this.issueList.addIssue(item);
     });
   }
 
   public async extractJiraIssuesChangelogData(): Promise<void> {
 
     let rawData: any;
-    await Promise.all(this.issuesList.jiraIssues.map(async (jiraIssue) => {
+    await Promise.all(this.issueList.issues.map(async (issue) => {
 
-      rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: jiraIssue.key } );
+      rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: issue.key } );
 
-      let jiraIssueChangelog = new JiraIssueChangelog();
+      let issueChangelog = new IssueChangelog();
 
-      rawData["values"].forEach((issueChangelog: any) => {
-        let items = issueChangelog["items"]?.find((item: any) => item["fieldId"]! === "status");
+      rawData["values"].forEach((value: any) => {
+        let items = value["items"]?.find((item: any) => item["fieldId"]! === "status");
         
-        let transition: Transition = {  id: issueChangelog["id"]!,
-                                        created: new Date(issueChangelog["created"]!),
+        let transition: Transition = {  id: value["id"]!,
+                                        created: new Date(value["created"]!),
                                         statusFromId: items?.from!,
                                         statusFromName: items?.fromString!,
                                         statusToId: items?.to!,
                                         statusToName: items?.toString!
                                         };
         
-        jiraIssueChangelog.addTransition(jiraIssue.key, transition);
+        issueChangelog.addTransition(issue.key, transition);
       });
       
-      this.changelogList.addIssue(jiraIssueChangelog);
+      this.changelogList.addIssue(issueChangelog);
 
     }));
 
@@ -99,7 +99,7 @@ export class JiraDataExtractor {
   }
 
   public toString(): string {
-    return  `${this.issuesList.toString()}\n` +
+    return  `${this.issueList.toString()}\n` +
             `${this.changelogList.toString()}\n` +
             `${this.project.toString()}\n`;
             

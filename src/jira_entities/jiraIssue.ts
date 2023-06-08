@@ -1,4 +1,4 @@
-export class JiraIssue {
+export class Issue {
     
   key: string;
   id: string;
@@ -37,22 +37,22 @@ export class JiraIssue {
 
 }
 
-export class JiraIssueList {
+export class IssueList {
   
-  jiraIssues: Array<JiraIssue>;
+  issues: Array<Issue>;
 
-  constructor(jiraIssues: Array<JiraIssue> = []) {
-    this.jiraIssues = jiraIssues;
+  constructor(issues: Array<Issue> = []) {
+    this.issues = issues;
   }
 
   public toString = () : string => {
-    return  `[Total: ${this.jiraIssues.length} issue(s)]\n` +
+    return  `[Total: ${this.issues.length} issue(s)]\n` +
             `---------------------------------------------\n` +
-            `${this.jiraIssues.map(i => i.toString()).join('\n')}`;
+            `${this.issues.map(i => i.toString()).join('\n')}`;
   }
 
-  public addIssue(issue: JiraIssue): void {
-    this.jiraIssues.push(issue);
+  public addIssue(issue: Issue): void {
+    this.issues.push(issue);
   }
 
 }
