@@ -1,12 +1,14 @@
 import { Version3Client } from "jira.js";
 import { JiraIssue, JiraIssueList } from "./jiraIssue";
 import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jiraIssueChangelog";
+import { JiraProject, IssueType } from "./jiraProject";
 
 export class JiraDataExtractor {
 
   client: Version3Client;
   issuesList: JiraIssueList;
-  changelogList: JiraIssuesChangelogList
+  changelogList: JiraIssuesChangelogList;
+  project: JiraProject;
 
   constructor() {
     this.client = new Version3Client({
@@ -21,6 +23,7 @@ export class JiraDataExtractor {
     });
     this.issuesList = new JiraIssueList();
     this.changelogList = new JiraIssuesChangelogList();
+    this.project = new JiraProject();
   }
 
   public async extractJiraIssuesData(): Promise<void> {
@@ -73,9 +76,33 @@ export class JiraDataExtractor {
 
   }
 
+  public async extractJiraProjectData(): Promise<void> {
+    
+    const rawData = await this.client.projects.getProject({
+      projectIdOrKey: process.env.PROJECTID!,
+    });
+
+    this.project.projectId = rawData["id"];
+    this.project.projectKey = rawData["key"];
+    this.project.projectName = rawData["name"];
+
+    let issueTypes: Array<IssueType> = [];
+
+    rawData["issueTypes"]?.forEach((item) => {
+      const issueType = new IssueType(item["id"],
+                                      item["iconUrl"],
+                                      item["name"],
+                                      item["subtask"]);
+      issueTypes.push(issueType);
+    });
+    this.project.issueTypes = issueTypes;
+
+  }
+
   public toString(): string {
     return  `${this.issuesList.toString()}\n` +
-            `${this.changelogList.toString()}\n`;
+            `${this.changelogList.toString()}\n` +
+            `${this.project.toString()}\n`;
             
   }
 }
