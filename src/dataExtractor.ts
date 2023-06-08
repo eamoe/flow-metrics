@@ -1,7 +1,7 @@
 import { Version3Client } from "jira.js";
-import { JiraIssue, JiraIssueList } from "./jiraIssue";
-import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jiraIssueChangelog";
-import { JiraProject, IssueType } from "./jiraProject";
+import { JiraIssue, JiraIssueList } from "./jira_entities/jiraIssue";
+import { JiraIssueChangelog, JiraIssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
+import { JiraProject, IssueType } from  "./jira_entities/jiraProject";
 
 export class JiraDataExtractor {
 
