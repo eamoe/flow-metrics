@@ -99,9 +99,9 @@ export class JiraDataExtractor {
   }
 
   public toString(): string {
-    return  `${this.issueList.toString()}\n` +
-            `${this.changelogList.toString()}\n` +
-            `${this.project.toString()}\n`;
+    return  `\n${this.issueList.toString()}\n` +
+            `\n${this.changelogList.toString()}\n` +
+            `\n${this.project.toString()}\n`;
             
   }
 }

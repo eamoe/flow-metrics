@@ -31,8 +31,7 @@ export class Issue {
     return  `[${this.typeName}] ${this.key}\n` +
             `Summary: ${this.summary}\n` +
             `Created: ${this.created.toUTCString()}\n` +
-            `Resolved: ${this.resolutionDate.toUTCString()}\n` +
-            `---------------------------------------------`;
+            `Resolved: ${this.resolutionDate.toUTCString()}\n`;
   }
 
 }
@@ -46,9 +45,8 @@ export class IssueList {
   }
 
   public toString = () : string => {
-    return  `[Total: ${this.issues.length} issue(s)]\n` +
-            `---------------------------------------------\n` +
-            `${this.issues.map(i => i.toString()).join('\n')}`;
+    return  `\n[Total: ${this.issues.length} issue(s)]\n` +
+            `\n${this.issues.map(i => i.toString()).join('\n')}`;
   }
 
   public addIssue(issue: Issue): void {
