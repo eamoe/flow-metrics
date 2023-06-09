@@ -106,6 +106,12 @@ export class DataProcessor {
             
   }
 
+  public toJson(): string {
+    return JSON.stringify(this.createTransactionalData( this.project,
+                                                        this.issueList,
+                                                        this.changelogList));
+  }
+
   public getIssueList(): IssueList {
     return this.issueList;
   }
