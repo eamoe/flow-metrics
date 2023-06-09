@@ -2,6 +2,7 @@ import { Version3Client } from "jira.js";
 import { Issue, IssueList } from "./jira_entities/jiraIssue";
 import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
 import { Project, IssueType } from  "./jira_entities/jiraProject";
+import { Transaction, TransactionList } from "./data_transactions/transaction";
 
 export class DataProcessor {
 
@@ -104,4 +105,51 @@ export class DataProcessor {
             `\n${this.project.toString()}\n`;
             
   }
+
+  public getIssueList(): IssueList {
+    return this.issueList;
+  }
+
+  public getChangelogList(): IssuesChangelogList {
+    return this.changelogList;
+  }
+
+  public getProject(): Project {
+    return this.project;
+  }
+
+
+  public createTransactionalData(project: Project, issueList: IssueList, changelogList: IssuesChangelogList): TransactionList {
+    let transactions = new TransactionList();
+    changelogList.issueChangelog.forEach((changelog) => {
+      
+      let key = changelog.issueKey;
+      let issue = issueList.findIssue(key)!;
+      let projectId = project.id;
+      let projectKey = project.key;
+      let projectName = project.name;
+      let issueId = issue?.id;
+      let issueKey = issue?.key;
+      let issueSummary = issue?.summary;
+      let issueCreatedDate = issue?.created;
+      let issueResolvedDate = issue?.resolutionDate;
+      let issueTypeId = issue?.typeId;
+      let issueTypeName = issue?.typeName;
+      let issueStatusCategoryChangeDate = issue?.statusCategoryChangeDate;
+
+      changelog.transitions.forEach((transition) => {
+        let transitionId = transition.id;
+        let transitionCreatedDate = transition.created;
+        let transitionStatusFromId = transition.statusFromId;
+        let transitionStatusFromName = transition.statusFromName;
+        let transitionStatusToId = transition.statusToId;
+        let transitionStatusToName = transition.statusToName;
+        let transaction = new Transaction(projectId, projectKey, projectName, issueId, issueKey, issueSummary, issueCreatedDate, issueResolvedDate, issueTypeId, issueTypeName, issueStatusCategoryChangeDate, transitionId, transitionCreatedDate, transitionStatusFromId, transitionStatusFromName, transitionStatusToId, transitionStatusToName);
+        transactions.addTransaction(transaction);
+      });
+
+    });
+    return transactions;
+  }
+
 }

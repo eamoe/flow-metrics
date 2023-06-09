@@ -24,13 +24,13 @@ export class Transaction {
                 issueId: string,
                 issueKey: string,
                 issueSummary: string,
-                issueCreatedDate: string,
-                issueResolvedDate: string,
+                issueCreatedDate: Date,
+                issueResolvedDate: Date,
                 issueTypeId: string,
                 issueTypeName: string,
-                statusCategoryChangeDate: string,
+                statusCategoryChangeDate: Date,
                 transitionId: string,
-                transitionCreatedDate: string,
+                transitionCreatedDate: Date,
                 transitionStatusFromId: string,
                 transitionStatusFromName: string,
                 transitionStatusToId: string,
@@ -41,13 +41,13 @@ export class Transaction {
             this.issueId = issueId;
             this.issueKey = issueKey;
             this.issueSummary = issueSummary;
-            this.issueCreatedDate = new Date(issueCreatedDate);
-            this.issueResolvedDate = new Date(issueResolvedDate);
+            this.issueCreatedDate = issueCreatedDate;
+            this.issueResolvedDate = issueResolvedDate;
             this.issueTypeId = issueTypeId;
             this.issueTypeName = issueTypeName;
-            this.statusCategoryChangeDate = new Date(statusCategoryChangeDate);
+            this.statusCategoryChangeDate = statusCategoryChangeDate;
             this.transitionId = transitionId;
-            this.transitionCreatedDate = new Date(transitionCreatedDate);
+            this.transitionCreatedDate = transitionCreatedDate;
             this.transitionStatusFromId = transitionStatusFromId;
             this.transitionStatusFromName = transitionStatusFromName;
             this.transitionStatusToId = transitionStatusToId;
@@ -89,7 +89,7 @@ export class Transaction {
               `\n${this.transactions.map(item => item.toString()).join('\n')}`;
     }
   
-    public addIssue(transaction: Transaction): void {
+    public addTransaction(transaction: Transaction): void {
       this.transactions.push(transaction);
     }
   

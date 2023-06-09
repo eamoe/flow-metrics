@@ -53,4 +53,8 @@ export class IssueList {
     this.issues.push(issue);
   }
 
+  public findIssue(key: string): Issue | undefined {
+    return this.issues.find(i => i.key === key);
+  }
+
 }
