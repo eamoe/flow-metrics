@@ -3,7 +3,7 @@ import { Issue, IssueList } from "./jira_entities/jiraIssue";
 import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
 import { Project, IssueType } from  "./jira_entities/jiraProject";
 
-export class JiraDataExtractor {
+export class DataProcessor {
 
   private client: Version3Client;
   private issueList: IssueList;

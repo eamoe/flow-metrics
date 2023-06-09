@@ -1,4 +1,4 @@
-import { JiraDataExtractor } from "./dataExtractor";
+import { DataProcessor } from "./dataProcessor";
 
 require("dotenv").config();
 
@@ -6,7 +6,7 @@ async function main() {
   
   try {
     
-    let data = new JiraDataExtractor();
+    let data = new DataProcessor();
 
     console.log("Extracting jira issue data...");
     await data.extractJiraIssuesData();
