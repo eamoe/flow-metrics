@@ -1,4 +1,4 @@
-import { DataProcessor } from "./dataProcessor";
+import { DataProcessor } from "./DataSources/dataProcessor";
 
 require("dotenv").config();
 
@@ -6,18 +6,10 @@ async function main() {
   
   try {
     
-    let data = new DataProcessor();
+    let dataProcessor = new DataProcessor();
+    let data = await dataProcessor.processData();
 
-    console.log("Extracting jira issue data...");
-    await data.extractJiraIssuesData();
-
-    console.log("Extracting jira issue changelog...");
-    await data.extractJiraIssuesChangelogData();
-
-    console.log("Extracting jira project...");
-    await data.extractJiraProjectData();
-
-    console.log(data.toJson());
+    console.log(data);
 
   } catch (e: any) {
 

@@ -1,30 +1,31 @@
+import { DataSource } from "../DataSource";
 import { Version3Client } from "jira.js";
 import { Issue, IssueList } from "./jira_entities/jiraIssue";
 import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
 import { Project, IssueType } from  "./jira_entities/jiraProject";
-import { Transaction, TransactionList } from "./data_transactions/transaction";
+import { Transaction, TransactionList } from "./transactions/transaction";
 
-export class DataProcessor {
+export class ApiDataSource implements DataSource {
+    
+    private client: Version3Client;
+    private issueList: IssueList;
+    private changelogList: IssuesChangelogList;
+    private project: Project;
 
-  private client: Version3Client;
-  private issueList: IssueList;
-  private changelogList: IssuesChangelogList;
-  private project: Project;
-
-  constructor() {
-    this.client = new Version3Client({ host: process.env.HOSTURL!,
-                                      authentication: {
-                                        basic: {
-                                          email: process.env.EMAIL!,
-                                          apiToken: process.env.APITOKEN!,
-                                        },
-                                      },
-                                      newErrorHandling: true,
-                                    });
-    this.issueList = new IssueList();
-    this.changelogList = new IssuesChangelogList();
-    this.project = new Project();
-  }
+    constructor() {
+        this.client = new Version3Client({ host: process.env.HOSTURL!,
+                                          authentication: {
+                                            basic: {
+                                              email: process.env.EMAIL!,
+                                              apiToken: process.env.APITOKEN!,
+                                            },
+                                          },
+                                          newErrorHandling: true,
+                                        });
+        this.issueList = new IssueList();
+        this.changelogList = new IssuesChangelogList();
+        this.project = new Project();
+  } 
 
   public async extractJiraIssuesData(): Promise<void> {
     
@@ -99,31 +100,21 @@ export class DataProcessor {
 
   }
 
+  public async fetchData(): Promise<void> {
+    console.log("Extracting jira issue data...");
+    await this.extractJiraIssuesData();
+    console.log("Extracting jira issue changelog...");
+    await this.extractJiraIssuesChangelogData();
+    console.log("Extracting jira project...");
+    await this.extractJiraProjectData();
+  }
+
   public toString(): string {
     return  `\n${this.issueList.toString()}\n` +
             `\n${this.changelogList.toString()}\n` +
             `\n${this.project.toString()}\n`;
             
   }
-
-  public toJson(): string {
-    return JSON.stringify(this.createTransactionalData( this.project,
-                                                        this.issueList,
-                                                        this.changelogList));
-  }
-
-  public getIssueList(): IssueList {
-    return this.issueList;
-  }
-
-  public getChangelogList(): IssuesChangelogList {
-    return this.changelogList;
-  }
-
-  public getProject(): Project {
-    return this.project;
-  }
-
 
   public createTransactionalData(project: Project, issueList: IssueList, changelogList: IssuesChangelogList): TransactionList {
     let transactions = new TransactionList();
@@ -158,4 +149,22 @@ export class DataProcessor {
     return transactions;
   }
 
-}
+  public toJson(): string {
+    return JSON.stringify(this.createTransactionalData( this.project,
+                                                        this.issueList,
+                                                        this.changelogList));
+  }
+
+  public getIssueList(): IssueList {
+    return this.issueList;
+  }
+
+  public getChangelogList(): IssuesChangelogList {
+    return this.changelogList;
+  }
+
+  public getProject(): Project {
+    return this.project;
+  }
+
+ }
