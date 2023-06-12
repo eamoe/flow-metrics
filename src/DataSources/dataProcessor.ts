@@ -1,11 +1,11 @@
-import { ApiDataSource } from "./APIDataSource/ApiDataSource";
+import { DataSource } from "./dataSource";
 export class DataProcessor {
 
-  public async processData(): Promise<string> {
-    let dataSource = new ApiDataSource();
-    await dataSource.fetchData();
-    let data = dataSource.toJson();
-    return data;
+  public async processData(dataSource: DataSource): Promise<string> {
+    
+    await dataSource.fetchData(dataSource);
+    return dataSource.toJsonString();
+
   }
 
 }

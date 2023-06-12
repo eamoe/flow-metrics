@@ -1,4 +1,4 @@
-import { DataSource } from "../DataSource";
+import { DataSource } from "../dataSource";
 import { Version3Client } from "jira.js";
 import { Issue, IssueList } from "./jira_entities/jiraIssue";
 import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
@@ -27,7 +27,7 @@ export class ApiDataSource implements DataSource {
         this.project = new Project();
   } 
 
-  public async extractJiraIssuesData(): Promise<void> {
+  private async fetchJiraIssueData(): Promise<void> {
     
     const rawData = await this.client.issueSearch.searchForIssuesUsingJql({
       jql: process.env.JQLFILTER!,
@@ -48,7 +48,7 @@ export class ApiDataSource implements DataSource {
     });
   }
 
-  public async extractJiraIssuesChangelogData(): Promise<void> {
+  private async fetchJiraIssuesChangelogData(): Promise<void> {
 
     let rawData: any;
     await Promise.all(this.issueList.issues.map(async (issue) => {
@@ -77,7 +77,7 @@ export class ApiDataSource implements DataSource {
 
   }
 
-  public async extractJiraProjectData(): Promise<void> {
+  private async fetchJiraProjectData(): Promise<void> {
     
     const rawData = await this.client.projects.getProject({
       projectIdOrKey: process.env.PROJECTID!,
@@ -102,11 +102,11 @@ export class ApiDataSource implements DataSource {
 
   public async fetchData(): Promise<void> {
     console.log("Extracting jira issue data...");
-    await this.extractJiraIssuesData();
+    await this.fetchJiraIssueData();
     console.log("Extracting jira issue changelog...");
-    await this.extractJiraIssuesChangelogData();
+    await this.fetchJiraIssuesChangelogData();
     console.log("Extracting jira project...");
-    await this.extractJiraProjectData();
+    await this.fetchJiraProjectData();
   }
 
   public toString(): string {
@@ -116,7 +116,10 @@ export class ApiDataSource implements DataSource {
             
   }
 
-  public createTransactionalData(project: Project, issueList: IssueList, changelogList: IssuesChangelogList): TransactionList {
+  private convertToTransactions(project: Project,
+                                issueList: IssueList,
+                                changelogList: IssuesChangelogList): TransactionList {
+    
     let transactions = new TransactionList();
     changelogList.issueChangelog.forEach((changelog) => {
       
@@ -135,13 +138,32 @@ export class ApiDataSource implements DataSource {
       let issueStatusCategoryChangeDate = issue?.statusCategoryChangeDate;
 
       changelog.transitions.forEach((transition) => {
+        
         let transitionId = transition.id;
         let transitionCreatedDate = transition.created;
         let transitionStatusFromId = transition.statusFromId;
         let transitionStatusFromName = transition.statusFromName;
         let transitionStatusToId = transition.statusToId;
         let transitionStatusToName = transition.statusToName;
-        let transaction = new Transaction(projectId, projectKey, projectName, issueId, issueKey, issueSummary, issueCreatedDate, issueResolvedDate, issueTypeId, issueTypeName, issueStatusCategoryChangeDate, transitionId, transitionCreatedDate, transitionStatusFromId, transitionStatusFromName, transitionStatusToId, transitionStatusToName);
+        
+        let transaction = new Transaction(projectId,
+                                          projectKey,
+                                          projectName,
+                                          issueId,
+                                          issueKey,
+                                          issueSummary,
+                                          issueCreatedDate,
+                                          issueResolvedDate,
+                                          issueTypeId,
+                                          issueTypeName,
+                                          issueStatusCategoryChangeDate,
+                                          transitionId,
+                                          transitionCreatedDate,
+                                          transitionStatusFromId,
+                                          transitionStatusFromName,
+                                          transitionStatusToId,
+                                          transitionStatusToName);
+
         transactions.addTransaction(transaction);
       });
 
@@ -149,8 +171,8 @@ export class ApiDataSource implements DataSource {
     return transactions;
   }
 
-  public toJson(): string {
-    return JSON.stringify(this.createTransactionalData( this.project,
+  public toJsonString(): string {
+    return JSON.stringify(this.convertToTransactions( this.project,
                                                         this.issueList,
                                                         this.changelogList));
   }

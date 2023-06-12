@@ -1,4 +1,7 @@
 export interface DataSource {
-    fetchData: () => void;
-    toJson: () => string;
+    
+    fetchData: (dataSource: DataSource) => void;
+    toJsonString: () => string;
+    toString: () => string;
+    
 }
