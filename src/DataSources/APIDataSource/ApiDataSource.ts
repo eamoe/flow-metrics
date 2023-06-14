@@ -1,9 +1,10 @@
 import { DataSource } from "../dataSource";
 import { Version3Client } from "jira.js";
 import { Issue, IssueList } from "./jira_entities/jiraIssue";
-import { IssueChangelog, IssuesChangelogList, IssueTransition } from "./jira_entities/jiraIssueChangelog";
+import { IssueChangelog, IssuesChangelogList } from "./jira_entities/jiraIssueChangelog";
 import { Project, IssueType } from  "./jira_entities/jiraProject";
-import { Transaction, TransactionList, Metadata, Transition} from "./transactions/transaction";
+import { Transaction, TransactionList } from "./transactions/transaction";
+import { Metadata, Transition } from "./interfaces";
 
 export class ApiDataSource implements DataSource {
     
@@ -41,8 +42,7 @@ export class ApiDataSource implements DataSource {
         issue["fields"]["created"],
         issue["fields"]["resolutiondate"]!,
         issue["fields"]["issuetype"]!["name"]!,
-        issue["fields"]["issuetype"]!["id"]!,
-        issue["fields"]["statuscategorychangedate"]
+        issue["fields"]["issuetype"]!["id"]!
       );
       this.issueList.addIssue(item);
     });
@@ -60,13 +60,13 @@ export class ApiDataSource implements DataSource {
       rawData["values"].forEach((value: any) => {
         let items = value["items"]?.find((item: any) => item["fieldId"]! === "status");
         
-        let transition: IssueTransition = { id: value["id"]!,
-                                            created: new Date(value["created"]!),
-                                            statusFromId: items?.from!,
-                                            statusFromName: items?.fromString!,
-                                            statusToId: items?.to!,
-                                            statusToName: items?.toString!
-                                            };
+        let transition: Transition = {id: value["id"]!,
+                                      created: new Date(value["created"]!),
+                                      statusFromId: items?.from!,
+                                      statusFromName: items?.fromString!,
+                                      statusToId: items?.to!,
+                                      statusToName: items?.toString!
+                                      };
         
         issueChangelog.addTransition(issue.key, transition);
       });
@@ -150,8 +150,7 @@ export class ApiDataSource implements DataSource {
 
       changelog.transitions.forEach((transition) => {
 
-        transaction.transitions.push({statusCategoryChangeDate: issue?.statusCategoryChangeDate,
-                                      id: transition.id,
+        transaction.transitions.push({id: transition.id,
                                       created: transition.created,
                                       statusFromId: transition.statusFromId,
                                       statusFromName: transition.statusFromName,

@@ -7,7 +7,6 @@ export class Issue {
   resolutionDate: Date;
   typeName: string;
   typeId: string;
-  statusCategoryChangeDate: Date;
 
   constructor(key: string,
               id: string,
@@ -15,8 +14,7 @@ export class Issue {
               created: string,
               resolutionDate: string,
               typeName: string,
-              typeId: string,
-              statusCategoryChangeDate: string) {
+              typeId: string) {
       this.key = key;
       this.id = id;
       this.summary = summary;
@@ -24,7 +22,6 @@ export class Issue {
       this.resolutionDate = new Date(resolutionDate);
       this.typeName = typeName;
       this.typeId = typeId;
-      this.statusCategoryChangeDate = new Date(statusCategoryChangeDate);
     }
 
   public toString = () : string => {

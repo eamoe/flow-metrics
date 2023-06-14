@@ -1,31 +1,13 @@
-export interface Metadata {   
-  id: string;
-  key: string;
-  summary: string;
-  created: Date;
-  resolved: Date;
-  typeId: string;
-  typeName: string;
-}
-export interface Transition {
-    statusCategoryChangeDate: Date;
-    id: string;
-    created: Date;
-    statusFromId: string;
-    statusFromName: string;
-    statusToId: string;
-    statusToName: string;
-}
+import { Metadata, Transition } from "../interfaces";
 export class Transaction {
     
     metadata: Metadata;
     transitions: Array<Transition>;
   
-    constructor(metadata: Metadata = {} as Metadata,
-                transitions: Array<Transition> = []) {
-            this.metadata = metadata;
-            this.transitions = transitions;
-      }
+    constructor(metadata: Metadata = {} as Metadata, transitions: Array<Transition> = []) {
+      this.metadata = metadata;
+      this.transitions = transitions;
+    }
   
     public toString = (): string => {
         return  `${this.metadata}` +

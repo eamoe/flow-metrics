@@ -1,25 +1,17 @@
-// TODO: Remove this if statusCategoryChangeDate is not needed
-export interface IssueTransition {   
-  id: string;
-  created: Date;
-  statusFromId: string;
-  statusFromName: string;
-  statusToId: string;
-  statusToName: string;
-}
+import { Transition } from "../interfaces";
 
 export class IssueChangelog {
   
   issueKey: string;
-  transitions: Array<IssueTransition>;
+  transitions: Array<Transition>;
 
 
-  constructor(issueKey: string = "", transitions: Array<IssueTransition> = []) {
+  constructor(issueKey: string = "", transitions: Array<Transition> = []) {
     this.issueKey = issueKey;
     this.transitions = transitions;
   }
 
-  public addTransition(issueKey: string, transition: IssueTransition): void {
+  public addTransition(issueKey: string, transition: Transition): void {
     this.issueKey = issueKey;
     this.transitions.push(transition);
   }
