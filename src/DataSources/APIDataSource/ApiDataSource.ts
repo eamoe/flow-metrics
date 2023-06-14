@@ -39,8 +39,8 @@ export class ApiDataSource implements DataSource {
         issue["key"],
         issue["id"],
         issue["fields"]["summary"],
-        issue["fields"]["created"],
-        issue["fields"]["resolutiondate"]!,
+        new Date(issue["fields"]["created"]),
+        new Date(issue["fields"]["resolutiondate"]!),
         issue["fields"]["issuetype"]!["name"]!,
         issue["fields"]["issuetype"]!["id"]!
       );
@@ -86,6 +86,11 @@ export class ApiDataSource implements DataSource {
     this.project.id = rawData["id"];
     this.project.key = rawData["key"];
     this.project.name = rawData["name"];
+    this.project.created = new Date(0);
+    this.project.resolved = new Date(rawData["deletedDate"]!);
+    this.project.typeId = rawData["projectTypeKey"]!;
+    this.project.typeName = rawData["style"]!;
+    
 
     let issueTypes: Array<IssueType> = [];
 
@@ -96,6 +101,7 @@ export class ApiDataSource implements DataSource {
                                       item["iconUrl"]);
       issueTypes.push(issueType);
     });
+    
     this.project.issueTypes = issueTypes;
 
   }
@@ -126,11 +132,10 @@ export class ApiDataSource implements DataSource {
                               id: project.id,
                               key: project.key,
                               summary: project.name,
-                              // TODO: can be added later
-                              created: new Date(0),
-                              resolved: new Date(0),
-                              typeId: "",
-                              typeName: ""
+                              created: new Date(project.created),
+                              resolved: new Date(project.resolved),
+                              typeId: project.typeId,
+                              typeName: project.typeName
     } as Metadata;
 
     changelogList.issueChangelog.forEach((changelog) => {

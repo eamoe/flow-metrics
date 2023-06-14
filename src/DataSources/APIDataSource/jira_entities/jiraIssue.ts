@@ -8,18 +8,18 @@ export class Issue {
   typeName: string;
   typeId: string;
 
-  constructor(key: string,
-              id: string,
-              summary: string,
-              created: string,
-              resolutionDate: string,
+  constructor(key: string = "",
+              id: string = "",
+              summary: string = "",
+              created: Date = new Date(),
+              resolutionDate: Date = new Date,
               typeName: string,
               typeId: string) {
       this.key = key;
       this.id = id;
       this.summary = summary;
-      this.created = new Date(created);
-      this.resolutionDate = new Date(resolutionDate);
+      this.created = created;
+      this.resolutionDate = resolutionDate;
       this.typeName = typeName;
       this.typeId = typeId;
     }
