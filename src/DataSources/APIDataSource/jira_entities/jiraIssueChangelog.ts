@@ -1,4 +1,5 @@
-export interface Transition {   
+// TODO: Remove this if statusCategoryChangeDate is not needed
+export interface IssueTransition {   
   id: string;
   created: Date;
   statusFromId: string;
@@ -10,15 +11,15 @@ export interface Transition {
 export class IssueChangelog {
   
   issueKey: string;
-  transitions: Array<Transition>;
+  transitions: Array<IssueTransition>;
 
 
-  constructor(issueKey: string = "", transitions: Array<Transition> = []) {
+  constructor(issueKey: string = "", transitions: Array<IssueTransition> = []) {
     this.issueKey = issueKey;
     this.transitions = transitions;
   }
 
-  public addTransition(issueKey: string, transition: Transition): void {
+  public addTransition(issueKey: string, transition: IssueTransition): void {
     this.issueKey = issueKey;
     this.transitions.push(transition);
   }

@@ -1,91 +1,52 @@
+export interface Metadata {   
+  id: string;
+  key: string;
+  summary: string;
+  created: Date;
+  resolved: Date;
+  typeId: string;
+  typeName: string;
+}
+export interface Transition {
+    statusCategoryChangeDate: Date;
+    id: string;
+    created: Date;
+    statusFromId: string;
+    statusFromName: string;
+    statusToId: string;
+    statusToName: string;
+}
 export class Transaction {
     
-    projectId: string;
-    projectKey: string;
-    projectName: string;
-    issueId: string;
-    issueKey: string;
-    issueSummary: string;
-    issueCreatedDate: Date;
-    issueResolvedDate: Date;
-    issueTypeId: string;
-    issueTypeName: string;
-    statusCategoryChangeDate: Date;
-    transitionId: string;
-    transitionCreatedDate: Date;
-    transitionStatusFromId: string;
-    transitionStatusFromName: string;
-    transitionStatusToId: string;
-    transitionStatusToName: string;
+    metadata: Metadata;
+    transitions: Array<Transition>;
   
-    constructor(projectId: string,
-                projectKey: string,
-                projectName: string,
-                issueId: string,
-                issueKey: string,
-                issueSummary: string,
-                issueCreatedDate: Date,
-                issueResolvedDate: Date,
-                issueTypeId: string,
-                issueTypeName: string,
-                statusCategoryChangeDate: Date,
-                transitionId: string,
-                transitionCreatedDate: Date,
-                transitionStatusFromId: string,
-                transitionStatusFromName: string,
-                transitionStatusToId: string,
-                transitionStatusToName: string) {
-            this.projectId = projectId;
-            this.projectKey = projectKey;
-            this.projectName = projectName;
-            this.issueId = issueId;
-            this.issueKey = issueKey;
-            this.issueSummary = issueSummary;
-            this.issueCreatedDate = issueCreatedDate;
-            this.issueResolvedDate = issueResolvedDate;
-            this.issueTypeId = issueTypeId;
-            this.issueTypeName = issueTypeName;
-            this.statusCategoryChangeDate = statusCategoryChangeDate;
-            this.transitionId = transitionId;
-            this.transitionCreatedDate = transitionCreatedDate;
-            this.transitionStatusFromId = transitionStatusFromId;
-            this.transitionStatusFromName = transitionStatusFromName;
-            this.transitionStatusToId = transitionStatusToId;
-            this.transitionStatusToName = transitionStatusToName;
+    constructor(metadata: Metadata = {} as Metadata,
+                transitions: Array<Transition> = []) {
+            this.metadata = metadata;
+            this.transitions = transitions;
       }
   
     public toString = (): string => {
-        return  `${this.projectId}: ` +
-                `${this.projectKey}: ` +
-                `${this.projectName}: ` +
-                `${this.issueId}: ` +
-                `${this.issueKey}: ` +
-                `${this.issueSummary}: ` +
-                `${this.issueCreatedDate}: ` +
-                `${this.issueResolvedDate}: ` +
-                `${this.issueTypeId}: ` +
-                `${this.issueTypeName}: ` +
-                `${this.statusCategoryChangeDate}: ` +
-                `${this.transitionId}: ` +
-                `${this.transitionCreatedDate}: ` +
-                `${this.transitionStatusFromId}: ` +
-                `${this.transitionStatusFromName}: ` +
-                `${this.transitionStatusToId}: ` +
-                `${this.transitionStatusToName}`;
+        return  `${this.metadata}` +
+                `${this.transitions.toString()}`;
     }
   
   }
   
   export class TransactionList {
     
+    metadata: Metadata;
     transactions: Array<Transaction>;
   
-    constructor(transactions: Array<Transaction> = []) {
+    constructor(metadata: Metadata = {} as Metadata, transactions: Array<Transaction> = []) {
+      this.metadata = metadata;
       this.transactions = transactions;
     }
   
     public toString = () : string => {
       return  `\n[Total: ${this.transactions.length} issue(s)]\n` +
+              `\n${this.metadata}` +
               `\n${this.transactions.map(item => item.toString()).join('\n')}`;
     }
   

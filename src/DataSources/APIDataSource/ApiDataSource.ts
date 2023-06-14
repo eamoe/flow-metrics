@@ -1,9 +1,9 @@
 import { DataSource } from "../dataSource";
 import { Version3Client } from "jira.js";
 import { Issue, IssueList } from "./jira_entities/jiraIssue";
-import { IssueChangelog, IssuesChangelogList, Transition } from "./jira_entities/jiraIssueChangelog";
+import { IssueChangelog, IssuesChangelogList, IssueTransition } from "./jira_entities/jiraIssueChangelog";
 import { Project, IssueType } from  "./jira_entities/jiraProject";
-import { Transaction, TransactionList } from "./transactions/transaction";
+import { Transaction, TransactionList, Metadata, Transition} from "./transactions/transaction";
 
 export class ApiDataSource implements DataSource {
     
@@ -60,13 +60,13 @@ export class ApiDataSource implements DataSource {
       rawData["values"].forEach((value: any) => {
         let items = value["items"]?.find((item: any) => item["fieldId"]! === "status");
         
-        let transition: Transition = {  id: value["id"]!,
-                                        created: new Date(value["created"]!),
-                                        statusFromId: items?.from!,
-                                        statusFromName: items?.fromString!,
-                                        statusToId: items?.to!,
-                                        statusToName: items?.toString!
-                                        };
+        let transition: IssueTransition = { id: value["id"]!,
+                                            created: new Date(value["created"]!),
+                                            statusFromId: items?.from!,
+                                            statusFromName: items?.fromString!,
+                                            statusToId: items?.to!,
+                                            statusToName: items?.toString!
+                                            };
         
         issueChangelog.addTransition(issue.key, transition);
       });
@@ -121,51 +121,46 @@ export class ApiDataSource implements DataSource {
                                 changelogList: IssuesChangelogList): TransactionList {
     
     let transactions = new TransactionList();
+    
+    transactions.metadata = {
+                              id: project.id,
+                              key: project.key,
+                              summary: project.name,
+                              // TODO: can be added later
+                              created: new Date(0),
+                              resolved: new Date(0),
+                              typeId: "",
+                              typeName: ""
+    } as Metadata;
+
     changelogList.issueChangelog.forEach((changelog) => {
       
       let key = changelog.issueKey;
       let issue = issueList.findIssue(key)!;
-      let projectId = project.id;
-      let projectKey = project.key;
-      let projectName = project.name;
-      let issueId = issue?.id;
-      let issueKey = issue?.key;
-      let issueSummary = issue?.summary;
-      let issueCreatedDate = issue?.created;
-      let issueResolvedDate = issue?.resolutionDate;
-      let issueTypeId = issue?.typeId;
-      let issueTypeName = issue?.typeName;
-      let issueStatusCategoryChangeDate = issue?.statusCategoryChangeDate;
+      let issueMetadata: Metadata = { id: issue?.id,
+                                      key: issue?.key,
+                                      summary: issue?.summary,
+                                      created: issue?.created,
+                                      resolved: issue?.resolutionDate,
+                                      typeId: issue?.typeId,
+                                      typeName: issue?.typeName};
+
+      let transaction = new Transaction();
+      transaction.metadata = issueMetadata;
 
       changelog.transitions.forEach((transition) => {
-        
-        let transitionId = transition.id;
-        let transitionCreatedDate = transition.created;
-        let transitionStatusFromId = transition.statusFromId;
-        let transitionStatusFromName = transition.statusFromName;
-        let transitionStatusToId = transition.statusToId;
-        let transitionStatusToName = transition.statusToName;
-        
-        let transaction = new Transaction(projectId,
-                                          projectKey,
-                                          projectName,
-                                          issueId,
-                                          issueKey,
-                                          issueSummary,
-                                          issueCreatedDate,
-                                          issueResolvedDate,
-                                          issueTypeId,
-                                          issueTypeName,
-                                          issueStatusCategoryChangeDate,
-                                          transitionId,
-                                          transitionCreatedDate,
-                                          transitionStatusFromId,
-                                          transitionStatusFromName,
-                                          transitionStatusToId,
-                                          transitionStatusToName);
 
-        transactions.addTransaction(transaction);
+        transaction.transitions.push({statusCategoryChangeDate: issue?.statusCategoryChangeDate,
+                                      id: transition.id,
+                                      created: transition.created,
+                                      statusFromId: transition.statusFromId,
+                                      statusFromName: transition.statusFromName,
+                                      statusToId: transition.statusToId,
+                                      statusToName: transition.statusToName} as Transition);
+
       });
+
+      transactions.addTransaction(transaction);
 
     });
     return transactions;
@@ -173,8 +168,8 @@ export class ApiDataSource implements DataSource {
 
   public toJsonString(): string {
     return JSON.stringify(this.convertToTransactions( this.project,
-                                                        this.issueList,
-                                                        this.changelogList));
+                                                      this.issueList,
+                                                      this.changelogList));
   }
 
   public getIssueList(): IssueList {
