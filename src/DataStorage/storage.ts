@@ -3,19 +3,27 @@ import { join } from 'path';
 
 export class Storage {
 
-  public static syncWriteFile(filename: string, data: any) {
+  private fileName: string;
+  private flag: string;
+
+  constructor(fileName: string, flag: string = "w") {
+    this.flag = flag;
+    this.fileName = fileName;
+  }
+
+  public writeToFile(data: string) {
     
-    writeFileSync(join(__dirname, filename), data, {
-      flag: 'w',
+    writeFileSync(join(__dirname, this.fileName), data, {
+      flag: this.flag,
     });
 
   }
 
-  public static syncReadFile(filename: string): string {
+  public readFromFile(): string {
     
-    const contents = readFileSync(join(__dirname, filename), 'utf-8');
-    return contents;
-    
+    const data = readFileSync(join(__dirname, this.fileName), 'utf-8');
+    return data;
+
   }
 
 }

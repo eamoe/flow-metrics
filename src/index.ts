@@ -13,10 +13,11 @@ async function main() {
     
     let data = await dataProcessor.processData(dataSource);
 
-    Storage.syncWriteFile("rawData.json", data);
+    let storage = new Storage("rawData.json");
+    storage.writeToFile(data);
 
-    const newData = Storage.syncReadFile("rawData.json");
-    console.log(JSON.parse(newData)["metadata"]);
+    const newData = storage.readFromFile();
+    console.log(JSON.parse(newData));
 
   } catch (e: any) {
 
