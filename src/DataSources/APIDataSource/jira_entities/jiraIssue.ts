@@ -12,7 +12,7 @@ export class Issue {
               id: string = "",
               summary: string = "",
               created: Date = new Date(),
-              resolutionDate: Date = new Date,
+              resolutionDate: Date = new Date(),
               typeName: string,
               typeId: string) {
       this.key = key;
