@@ -13,7 +13,7 @@ async function main() {
     
     let data = await dataProcessor.processData(dataSource);
 
-    let storage = new Storage("rawData.json");
+    let storage = new Storage();
     storage.writeToFile(data);
 
     const newData = storage.readFromFile();

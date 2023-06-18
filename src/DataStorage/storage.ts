@@ -6,7 +6,7 @@ export class Storage {
   private fileName: string;
   private flag: string;
 
-  constructor(fileName: string, flag: string = "w") {
+  constructor(fileName: string = "rawData.json", flag: string = "w") {
     this.flag = flag;
     this.fileName = fileName;
   }
