@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { DataStorage } from './dataStorage';
 
-export class Storage {
+export class JSONStorage implements DataStorage {
 
   private fileName: string;
   private flag: string;
@@ -11,19 +12,15 @@ export class Storage {
     this.fileName = fileName;
   }
 
-  public writeToFile(data: string) {
-    
+  public sendDataToStorage(data: string) {
     writeFileSync(join(__dirname, this.fileName), data, {
       flag: this.flag,
     });
-
   }
 
-  public readFromFile(): string {
-    
+  public retrieveDataFromStorage(): string {
     const data = readFileSync(join(__dirname, this.fileName), 'utf-8');
     return data;
-
   }
 
 }
