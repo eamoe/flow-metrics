@@ -71,7 +71,7 @@ export class ApiDataSource implements DataSource {
         issueChangelog.addTransition(issue.key, transition);
       });
       
-      this.changelogList.addIssue(issueChangelog);
+      issueChangelog.issueKey ? this.changelogList.addIssue(issueChangelog) : false;
 
     }));
 
@@ -150,8 +150,7 @@ export class ApiDataSource implements DataSource {
                                       typeId: issue?.typeId,
                                       typeName: issue?.typeName};
 
-      let transaction = new Transaction();
-      transaction.metadata = issueMetadata;
+      let transaction = new Transaction(issueMetadata);
 
       changelog.transitions.forEach((transition) => {
 
