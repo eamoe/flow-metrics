@@ -3,6 +3,7 @@ import { DataProcessor } from "./DataSources/dataProcessor";
 import { DataSource } from "./DataSources/dataSource";
 import { DataStorage } from "./DataStorage/dataStorage";
 import { JSONStorage } from "./DataStorage/JSONStorage";
+import { FlowTime } from "./LeadTime/flowTime";
 require("dotenv").config();
 
 async function main() {
@@ -18,7 +19,13 @@ async function main() {
     storage.sendDataToStorage(data);
 
     const newData = storage.retrieveDataFromStorage();
-    console.log(JSON.parse(newData));
+
+    let flowTime: FlowTime = new FlowTime(JSON.parse(newData)["transactions"]);
+    flowTime.fetchCustomerLeadTime();
+    let customerLeadTimeDistribution: Map<number, number> = flowTime.createFlowTimeDistribution(flowTime.getCustomerLeadTime());
+    customerLeadTimeDistribution.forEach((value: number, key: number) => {
+      console.log(new Date(key), value);
+    });
 
   } catch (e: any) {
 
