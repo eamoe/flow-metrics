@@ -8,7 +8,7 @@ type FlowTimeItem = {
 
 export class FlowTime {
 
-    private customerLeadTime: Array<FlowTimeItem> = new Array<FlowTimeItem>();
+    private flowTime: Array<FlowTimeItem> = new Array<FlowTimeItem>();
     private rawData: Array<Transaction>;
   
     constructor(rawData: Array<Transaction> = []) {
@@ -16,11 +16,11 @@ export class FlowTime {
       }
   
     public toString = () : string => {
-        return  `\n[Total: ${this.customerLeadTime.length} item(s)]\n` +
-                `\n${this.customerLeadTime.map(i => i.toString()).join('\n')}`;
+        return  `\n[Total: ${this.flowTime.length} item(s)]\n` +
+                `\n${this.flowTime.map(i => i.toString()).join('\n')}`;
     }
 
-    public fetchCustomerLeadTime(): void {
+    public fetchFlowTime(): void {
       this.rawData.forEach((transaction) => {      
         const key = transaction["metadata"].key;
         const created = new Date(transaction["metadata"].created);
@@ -28,18 +28,18 @@ export class FlowTime {
         const diffTime = (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
         if (diffTime > 0) {
           const timestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
-          this.customerLeadTime.push({key: key, date: timestamp, value: diffTime});
+          this.flowTime.push({key: key, date: timestamp, value: diffTime});
         }  
       });
     }
 
-    public getCustomerLeadTime(): Array<FlowTimeItem> {
-      return this.customerLeadTime;
+    public getFlowTime(): Array<FlowTimeItem> {
+      return this.flowTime;
     }
 
-    public createFlowTimeDistribution(flowTimeArray: Array<FlowTimeItem>): Map<number, number> {
+    public createFlowTimeDistribution(): Map<number, number> {
       let flowTimeMap = new Map<number, number>();
-      flowTimeArray.forEach(function (item: FlowTimeItem) {
+      this.flowTime.forEach(function (item: FlowTimeItem) {
       let dateMillis = item.date.getTime();
       if (flowTimeMap.has(dateMillis)) {
         let value = flowTimeMap.get(dateMillis);
