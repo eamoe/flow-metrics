@@ -50,22 +50,21 @@ export class ApiDataSource implements DataSource {
 
   private async fetchJiraIssuesChangelogData(): Promise<void> {
 
-    let rawData: any;
     await Promise.all(this.issueList.issues.map(async (issue) => {
 
-      rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: issue.key } );
+      const rawData = await this.client.issues.getChangeLogs( { issueIdOrKey: issue.key } );
 
       let issueChangelog = new IssueChangelog();
 
-      rawData["values"].forEach((value: any) => {
-        let items = value["items"]?.find((item: any) => item["fieldId"]! === "status");
+      rawData["values"]!.forEach((value: any) => {
+        let items = value["items"]!.find((item: any) => item["fieldId"]! === "status");
         
-        let transition: Transition = {id: value["id"]!,
-                                      created: new Date(value["created"]!),
-                                      statusFromId: items?.from!,
-                                      statusFromName: items?.fromString!,
-                                      statusToId: items?.to!,
-                                      statusToName: items?.toString!
+        let transition: Transition = {id: value["id"],
+                                      created: new Date(value["created"]),
+                                      statusFromId: items?.from,
+                                      statusFromName: items?.fromString,
+                                      statusToId: items?.to,
+                                      statusToName: items?.toString
                                       };
         
         issueChangelog.addTransition(issue.key, transition);
