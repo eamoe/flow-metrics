@@ -106,11 +106,11 @@ export class ApiDataSource implements DataSource {
   }
 
   public async fetchData(): Promise<void> {
-    console.log("Extracting jira issue data...");
+    console.log("Fetching jira issue data...");
     await this.fetchJiraIssueData();
-    console.log("Extracting jira issue changelog...");
+    console.log("Fetching jira issue changelog...");
     await this.fetchJiraIssuesChangelogData();
-    console.log("Extracting jira project...");
+    console.log("Fetching jira project data...");
     await this.fetchJiraProjectData();
   }
 
