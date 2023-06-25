@@ -64,7 +64,7 @@ export class FlowMetrics {
     let flowTimeMap = new Map<number, number>();
     this.flowItems.forEach(function (item: FlowItem) {
       if (item.isCompleted === true) {
-        let flowTime = Math.floor(item.duration);
+        let flowTime = Math.ceil(item.duration);
         if (flowTimeMap.has(flowTime)) {
           let value = flowTimeMap.get(flowTime);
           if (value) { flowTimeMap.set(flowTime, value + 1)};
