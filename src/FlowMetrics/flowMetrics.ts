@@ -2,17 +2,15 @@ import { Transaction } from "../DataSources/APIDataSource/transactions/transacti
 
 type FlowItem = {
     key: string;
-    //type: string;
-    //currentStatus: string;
+    typeId: string;
     datestamp: Date;
     duration: number;
     isCompleted: boolean;
   };
-
 export class FlowMetrics {
 
   private flowItems: Array<FlowItem>;
-  
+    
   constructor(rawData: Array<Transaction> = []) {
     this.flowItems = new Array<FlowItem>();
     this.fetchFlowItems(rawData);
@@ -21,17 +19,18 @@ export class FlowMetrics {
   private fetchFlowItems(rawData: Array<Transaction>): void {
     rawData.forEach((transaction: Transaction) => {      
       const key = transaction["metadata"].key;
+      const typeId = transaction["metadata"].typeId;
       const created = new Date(transaction["metadata"].created);
       const resolved = new Date(transaction["metadata"].resolved);
       const diffTime = (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
       if (diffTime >= 0) {
         const datestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
-        this.flowItems.push({key: key, datestamp: datestamp, duration: diffTime, isCompleted: true});
+        this.flowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: true});
       } else {
         const nowDate = new Date();
         const datestamp = new Date(`${nowDate.getUTCFullYear()}-${nowDate.getUTCMonth() + 1}-${nowDate.getUTCDate() + 1}`);
         const diffTime = (nowDate.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-        this.flowItems.push({key: key, datestamp: datestamp, duration: diffTime, isCompleted: false});
+        this.flowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: false});
       }
     });
   }
