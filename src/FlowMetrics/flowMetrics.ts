@@ -1,14 +1,14 @@
 import { Transaction } from "../DataSources/APIDataSource/transactions/transaction";
 
-type FlowTimeItem = {
+type FlowItem = {
     key: string;
     date: Date;
     value: number;
   };
 
-export class FlowTime {
+export class FlowMetrics {
 
-    private flowTime: Array<FlowTimeItem> = new Array<FlowTimeItem>();
+    private flowTime: Array<FlowItem> = new Array<FlowItem>();
     private rawData: Array<Transaction>;
   
     constructor(rawData: Array<Transaction> = []) {
@@ -33,22 +33,22 @@ export class FlowTime {
       });
     }
 
-    public getFlowTime(): Array<FlowTimeItem> {
+    public getFlowTime(): Array<FlowItem> {
       return this.flowTime;
     }
 
-    public createFlowTimeDistribution(): Map<number, number> {
-      let flowTimeMap = new Map<number, number>();
-      this.flowTime.forEach(function (item: FlowTimeItem) {
+    public formFlowVelocityDistribution(): Map<number, number> {
+      let flowVelocityMap = new Map<number, number>();
+      this.flowTime.forEach(function (item: FlowItem) {
       let dateMillis = item.date.getTime();
-      if (flowTimeMap.has(dateMillis)) {
-        let value = flowTimeMap.get(dateMillis);
-        if (value) { flowTimeMap.set(dateMillis, value + 1)};
+      if (flowVelocityMap.has(dateMillis)) {
+        let value = flowVelocityMap.get(dateMillis);
+        if (value) { flowVelocityMap.set(dateMillis, value + 1)};
       } else {
-        flowTimeMap.set(dateMillis, 1);
+        flowVelocityMap.set(dateMillis, 1);
       }
       });
-    return flowTimeMap;
+    return flowVelocityMap;
     }
 
 }
