@@ -8,11 +8,12 @@ type FlowItem = {
 
 export class FlowMetrics {
 
-    private flowTime: Array<FlowItem> = new Array<FlowItem>();
-    private rawData: Array<Transaction>;
+  private rawData: Array<Transaction>;  
+  private flowTime: Array<FlowItem>;
   
     constructor(rawData: Array<Transaction> = []) {
         this.rawData = rawData;
+        this.flowTime = new Array<FlowItem>();
       }
   
     public toString = () : string => {
@@ -21,10 +22,10 @@ export class FlowMetrics {
     }
 
     public fetchFlowMetrics(): void {
-      this.fetchFlowTime();
+      this.fetchFlowItems();
     }
 
-    private fetchFlowTime(): void {
+    private fetchFlowItems(): void {
       this.rawData.forEach((transaction) => {      
         const key = transaction["metadata"].key;
         const created = new Date(transaction["metadata"].created);
@@ -33,7 +34,7 @@ export class FlowMetrics {
         if (diffTime > 0) {
           const timestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
           this.flowTime.push({key: key, date: timestamp, value: diffTime});
-        }  
+        }
       });
     }
 
