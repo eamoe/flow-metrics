@@ -20,7 +20,11 @@ export class FlowMetrics {
                 `\n${this.flowTime.map(i => i.toString()).join('\n')}`;
     }
 
-    public fetchFlowTime(): void {
+    public fetchFlowMetrics(): void {
+      this.fetchFlowTime();
+    }
+
+    private fetchFlowTime(): void {
       this.rawData.forEach((transaction) => {      
         const key = transaction["metadata"].key;
         const created = new Date(transaction["metadata"].created);

@@ -20,14 +20,15 @@ async function main() {
 
     const newData = storage.retrieveDataFromStorage();
 
-    let flowTimeObject: FlowMetrics = new FlowMetrics(JSON.parse(newData)["transactions"]);
-    flowTimeObject.fetchFlowTime();
-    let flowTimeMap: Map<number, number> = flowTimeObject.formFlowVelocityDistribution();
-    flowTimeMap.forEach((value: number, key: number) => {
-      console.log(new Date(key), value);
-    });
-    const result = Object.fromEntries(flowTimeMap);
-    console.log(result);
+    let flowMetricsObject: FlowMetrics = new FlowMetrics(JSON.parse(newData)["transactions"]);
+    flowMetricsObject.fetchFlowMetrics();
+    console.log(flowMetricsObject.getFlowTime());
+    //let flowTimeMap: Map<number, number> = flowMetricsObject.formFlowVelocityDistribution();
+    //flowTimeMap.forEach((value: number, key: number) => {
+    //  console.log(new Date(key), value);
+    //});
+    //const result = Object.fromEntries(flowTimeMap);
+    //console.log(result);
 
   } catch (e: any) {
 
