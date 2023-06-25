@@ -21,8 +21,7 @@ async function main() {
     const newData = storage.retrieveDataFromStorage();
 
     let flowMetricsObject: FlowMetrics = new FlowMetrics(JSON.parse(newData)["transactions"]);
-    flowMetricsObject.fetchFlowMetrics();
-    console.log(flowMetricsObject.getFlowTime());
+    console.log(flowMetricsObject.getFlowItems());
     let flowTimeMap: Map<number, number> = flowMetricsObject.formFlowVelocityDistribution();
     flowTimeMap.forEach((value: number, key: number) => {
       console.log(new Date(key), value);
