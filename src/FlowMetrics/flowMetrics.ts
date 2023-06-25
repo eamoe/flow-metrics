@@ -2,8 +2,11 @@ import { Transaction } from "../DataSources/APIDataSource/transactions/transacti
 
 type FlowItem = {
     key: string;
-    date: Date;
-    value: number;
+    //type: string;
+    //currentStatus: string;
+    datestamp: Date;
+    duration: number;
+    isCompleted: boolean;
   };
 
 export class FlowMetrics {
@@ -31,9 +34,14 @@ export class FlowMetrics {
         const created = new Date(transaction["metadata"].created);
         const resolved = new Date(transaction["metadata"].resolved);
         const diffTime = (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-        if (diffTime > 0) {
-          const timestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
-          this.flowTime.push({key: key, date: timestamp, value: diffTime});
+        if (diffTime >= 0) {
+          const datestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
+          this.flowTime.push({key: key, datestamp: datestamp, duration: diffTime, isCompleted: true});
+        } else {
+          const nowDate = new Date();
+          const datestamp = new Date(`${nowDate.getUTCFullYear()}-${nowDate.getUTCMonth() + 1}-${nowDate.getUTCDate() + 1}`);
+          const diffTime = (nowDate.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+          this.flowTime.push({key: key, datestamp: datestamp, duration: diffTime, isCompleted: false});
         }
       });
     }
@@ -45,13 +53,15 @@ export class FlowMetrics {
     public formFlowVelocityDistribution(): Map<number, number> {
       let flowVelocityMap = new Map<number, number>();
       this.flowTime.forEach(function (item: FlowItem) {
-      let dateMillis = item.date.getTime();
-      if (flowVelocityMap.has(dateMillis)) {
-        let value = flowVelocityMap.get(dateMillis);
-        if (value) { flowVelocityMap.set(dateMillis, value + 1)};
-      } else {
-        flowVelocityMap.set(dateMillis, 1);
-      }
+        if (item.isCompleted === true) {  
+          let dateMillis = item.datestamp.getTime();
+          if (flowVelocityMap.has(dateMillis)) {
+            let value = flowVelocityMap.get(dateMillis);
+            if (value) { flowVelocityMap.set(dateMillis, value + 1)};
+          } else {
+            flowVelocityMap.set(dateMillis, 1);
+          }
+        }
       });
     return flowVelocityMap;
     }
