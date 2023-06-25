@@ -47,7 +47,7 @@ export class FlowMetrics {
   public formFlowVelocityDistribution(): Map<number, number> {
     let flowVelocityMap = new Map<number, number>();
     this.flowItems.forEach(function (item: FlowItem) {
-      if (item.isCompleted === true) {  
+      if (item.isCompleted === true) {
         let dateMillis = item.datestamp.getTime();
         if (flowVelocityMap.has(dateMillis)) {
           let value = flowVelocityMap.get(dateMillis);
@@ -58,6 +58,22 @@ export class FlowMetrics {
       }
     });
   return flowVelocityMap;
+  }
+
+  public formFlowTimeDistribution(): Map<number, number> {
+    let flowTimeMap = new Map<number, number>();
+    this.flowItems.forEach(function (item: FlowItem) {
+      if (item.isCompleted === true) {
+        let flowTime = Math.floor(item.duration);
+        if (flowTimeMap.has(flowTime)) {
+          let value = flowTimeMap.get(flowTime);
+          if (value) { flowTimeMap.set(flowTime, value + 1)};
+        } else {
+          flowTimeMap.set(flowTime, 1);
+        }
+      }
+    });
+  return flowTimeMap;
   }
 
 }

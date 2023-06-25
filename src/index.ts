@@ -22,12 +22,14 @@ async function main() {
 
     let flowMetricsObject: FlowMetrics = new FlowMetrics(JSON.parse(newData)["transactions"]);
     console.log(flowMetricsObject.getFlowItems());
-    let flowTimeMap: Map<number, number> = flowMetricsObject.formFlowVelocityDistribution();
-    flowTimeMap.forEach((value: number, key: number) => {
+    let flowVelocityMap: Map<number, number> = flowMetricsObject.formFlowVelocityDistribution();
+    flowVelocityMap.forEach((value: number, key: number) => {
       console.log(new Date(key), value);
     });
-    const result = Object.fromEntries(flowTimeMap);
+    const result = Object.fromEntries(flowVelocityMap);
     console.log(result);
+
+    console.log(Object.fromEntries(flowMetricsObject.formFlowTimeDistribution()));
 
   } catch (e: any) {
 
