@@ -10,13 +10,17 @@ type FlowItem = {
 export class FlowMetrics {
 
   private flowItems: Array<FlowItem>;
+  private flowVelocityDistribution: Map<number, number>;
+  private flowTimeDistribution: Map<number, number>;
     
   constructor(rawData: Array<Transaction> = []) {
-    this.flowItems = new Array<FlowItem>();
-    this.fetchFlowItems(rawData);
+    this.flowItems = this.fetchFlowItems(rawData);
+    this.flowTimeDistribution = this.formFlowTimeDistribution();
+    this.flowVelocityDistribution = this.formFlowVelocityDistribution();
   }
 
-  private fetchFlowItems(rawData: Array<Transaction>): void {
+  private fetchFlowItems(rawData: Array<Transaction>): Array<FlowItem> {
+    let localFlowItems: Array<FlowItem> = [];
     rawData.forEach((transaction: Transaction) => {      
       const key = transaction["metadata"].key;
       const typeId = transaction["metadata"].typeId;
@@ -25,14 +29,15 @@ export class FlowMetrics {
       const diffTime = (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
       if (diffTime >= 0) {
         const datestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
-        this.flowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: true});
+        localFlowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: true});
       } else {
         const nowDate = new Date();
         const datestamp = new Date(`${nowDate.getUTCFullYear()}-${nowDate.getUTCMonth() + 1}-${nowDate.getUTCDate() + 1}`);
         const diffTime = (nowDate.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-        this.flowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: false});
+        localFlowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: false});
       }
     });
+    return localFlowItems;
   }
 
   public toString = () : string => {
@@ -40,11 +45,19 @@ export class FlowMetrics {
             `\n${this.flowItems.map(i => i.toString()).join('\n')}`;
   }
 
-    public getFlowItems(): Array<FlowItem> {
-      return this.flowItems;
-    }
+  public getFlowItems(): Array<FlowItem> {
+    return this.flowItems;
+  }
 
-  public formFlowVelocityDistribution(): Map<number, number> {
+  public getFlowTimeDistribution(): Map<number, number> {
+    return this.flowTimeDistribution;
+  }
+
+  public getFlowVelocityDistribution(): Map<number, number> {
+    return this.flowVelocityDistribution;
+  }
+
+  private formFlowVelocityDistribution(): Map<number, number> {
     let flowVelocityMap = new Map<number, number>();
     this.flowItems.forEach(function (item: FlowItem) {
       if (item.isCompleted === true) {
@@ -60,7 +73,7 @@ export class FlowMetrics {
   return flowVelocityMap;
   }
 
-  public formFlowTimeDistribution(): Map<number, number> {
+  private formFlowTimeDistribution(): Map<number, number> {
     let flowTimeMap = new Map<number, number>();
     this.flowItems.forEach(function (item: FlowItem) {
       if (item.isCompleted === true) {
