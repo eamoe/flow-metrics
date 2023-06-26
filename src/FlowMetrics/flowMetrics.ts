@@ -3,7 +3,8 @@ import { Transaction } from "../DataSources/APIDataSource/transactions/transacti
 type FlowItem = {
     key: string;
     typeId: string;
-    datestamp: Date;
+    startDatestamp: Date;
+    endDatestamp: Date;
     duration: number;
     isCompleted: boolean;
   };
@@ -29,12 +30,12 @@ export class FlowMetrics {
       const diffTime = (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
       if (diffTime >= 0) {
         const datestamp = new Date(`${resolved.getUTCFullYear()}-${resolved.getUTCMonth() + 1}-${resolved.getUTCDate() + 1}`);
-        localFlowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: true});
+        localFlowItems.push({key: key, typeId: typeId, startDatestamp: created, endDatestamp: datestamp, duration: diffTime, isCompleted: true});
       } else {
         const nowDate = new Date();
         const datestamp = new Date(`${nowDate.getUTCFullYear()}-${nowDate.getUTCMonth() + 1}-${nowDate.getUTCDate() + 1}`);
         const diffTime = (nowDate.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-        localFlowItems.push({key: key, typeId: typeId, datestamp: datestamp, duration: diffTime, isCompleted: false});
+        localFlowItems.push({key: key, typeId: typeId, startDatestamp: created, endDatestamp: datestamp, duration: diffTime, isCompleted: false});
       }
     });
     return localFlowItems;
@@ -61,7 +62,7 @@ export class FlowMetrics {
     let flowVelocityMap = new Map<number, number>();
     this.flowItems.forEach(function (item: FlowItem) {
       if (item.isCompleted === true) {
-        let dateMillis = item.datestamp.getTime();
+        let dateMillis = item.endDatestamp.getTime();
         if (flowVelocityMap.has(dateMillis)) {
           let value = flowVelocityMap.get(dateMillis);
           if (value) { flowVelocityMap.set(dateMillis, value + 1)};
